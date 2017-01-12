@@ -8,6 +8,7 @@ import (
 
 	"strings"
 
+	"github.com/dovys/mboard/handlers/mock"
 	"github.com/dovys/mboard/services"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
@@ -15,14 +16,14 @@ import (
 )
 
 type PostsHandlerTestSuite struct {
-	postsService *mockPostsService
+	postsService *mock.MockPostsService
 	mux          *mux.Router
 	w            *httptest.ResponseRecorder
 }
 
 func setupSuite() *PostsHandlerTestSuite {
 	s := &PostsHandlerTestSuite{
-		postsService: new(mockPostsService),
+		postsService: new(mock.MockPostsService),
 		mux:          mux.NewRouter(),
 		w:            httptest.NewRecorder(),
 	}

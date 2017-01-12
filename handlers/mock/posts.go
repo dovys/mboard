@@ -1,4 +1,4 @@
-package handlers
+package mock
 
 import (
 	"github.com/dovys/mboard/services"
@@ -6,23 +6,23 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type mockPostsService struct {
+type MockPostsService struct {
 	mock.Mock
 }
 
-func (m *mockPostsService) GetPosts(limit uint64, offset uint64) []*services.Post {
+func (m *MockPostsService) GetPosts(limit uint64, offset uint64) []*services.Post {
 	args := m.Called(limit, offset)
 
 	return args.Get(0).([]*services.Post)
 }
 
-func (m *mockPostsService) GetPost(id uuid.UUID) *services.Post {
+func (m *MockPostsService) GetPost(id uuid.UUID) *services.Post {
 	args := m.Called(id)
 
 	return args.Get(0).(*services.Post)
 }
 
-func (m *mockPostsService) SubmitPost(author string, text string) *uuid.UUID {
+func (m *MockPostsService) SubmitPost(author string, text string) *uuid.UUID {
 	args := m.Called(author, text)
 
 	return args.Get(0).(*uuid.UUID)
