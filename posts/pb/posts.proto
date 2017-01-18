@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package pb;
+
+service Posts {
+    rpc GetLatestPosts(GetLatestPostsRequest) returns (GetLatestPostsResponse) {}
+    rpc GetPost(GetPostRequest) returns (GetPostResponse) {}
+    rpc AddPost(AddPostRequest) returns (AddPostResponse) {}
+}
+
+message Post {
+    bytes id = 1;
+    string author = 2;
+    string text = 3;
+    int64 date = 4;
+}
+
+message GetLatestPostsRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+}
+
+message AddPostRequest {
+    string author = 1;
+    string text = 2;
+}
+
+message GetPostRequest {
+    bytes id = 1;
+}
+
+message GetPostResponse {
+    Post post = 1;
+    string err = 2;
+}
+
+message GetLatestPostsResponse {
+    repeated Post posts = 1;
+    string err = 2;
+}
+
+message AddPostResponse {
+    bytes id = 1;
+    string err = 2;
+}
