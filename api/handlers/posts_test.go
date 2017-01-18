@@ -8,8 +8,8 @@ import (
 
 	"strings"
 
-	"github.com/dovys/mboard/handlers/mock"
-	"github.com/dovys/mboard/services"
+	"github.com/dovys/mboard/api/handlers/mock"
+	"github.com/dovys/mboard/api/services"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"

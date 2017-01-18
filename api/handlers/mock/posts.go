@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/dovys/mboard/services"
+	"github.com/dovys/mboard/api/services"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/mock"
 )

@@ -6,7 +6,7 @@ import (
 
 	"strconv"
 
-	"github.com/dovys/mboard/services"
+	"github.com/dovys/mboard/api/services"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )

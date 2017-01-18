@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dovys/mboard/handlers"
-	"github.com/dovys/mboard/services"
+	"github.com/dovys/mboard/api/handlers"
+	"github.com/dovys/mboard/api/services"
 	"github.com/gorilla/mux"
 )
 
