@@ -1,69 +1,81 @@
 package services
 
 import (
+	"context"
 	"time"
 
-	"sync"
+	"github.com/pkg/errors"
 
+	"github.com/dovys/mboard/posts"
+	"github.com/dovys/mboard/posts/pb"
 	"github.com/satori/go.uuid"
+	"google.golang.org/grpc"
 )
 
-type Post struct {
-	Id     uuid.UUID
-	Author string
-	Text   string
-	Date   time.Time
-}
+var (
+	ErrUnableToParseUUID    = errors.New("Unable to parse uuid.")
+	ErrServiceReturnedError = errors.New("Service returned error.")
+	ErrServiceUnavailable   = errors.New("Service unavailable.")
+)
 
-type PostsService interface {
-	GetPosts(limit uint64, offset uint64) []*Post
-	GetPost(uuid.UUID) *Post
-	SubmitPost(author string, text string) *uuid.UUID
-}
+type PostsService posts.Service
 
 func NewPostsService() PostsService {
+	// lacks timeouts, proper error handling when the service disappears, etc.
+	conn, err := grpc.Dial("localhost:8081", grpc.WithInsecure())
+
+	if err != nil {
+		panic(errors.Wrap(ErrServiceUnavailable, err.Error()))
+	}
+
 	return &postsService{
-		posts:       make([]*Post, 0),
-		postMap:     make(map[uuid.UUID]*Post, 0),
-		submitMutex: &sync.Mutex{},
+		c: pb.NewPostsClient(conn),
 	}
 }
 
 type postsService struct {
-	posts       []*Post
-	postMap     map[uuid.UUID]*Post
-	submitMutex *sync.Mutex
+	c pb.PostsClient
 }
 
-func (s *postsService) GetPosts(offset uint64, limit uint64) []*Post {
-	if int(offset) >= len(s.posts) {
-		return s.posts[0:0]
+// messy
+func (s *postsService) GetLatestPosts(offset int64, limit int64) ([]*posts.Post, error) {
+	r, err := s.c.GetLatestPosts(
+		context.Background(),
+		&pb.GetLatestPostsRequest{Offset: offset, Limit: limit},
+	)
+
+	if err != nil {
+		return nil, errors.Wrap(ErrServiceUnavailable, err.Error())
 	}
 
-	if int(offset+limit) > len(s.posts) {
-		limit = uint64(len(s.posts)) - offset
+	if r.Err != "" {
+		return nil, errors.Wrap(ErrServiceReturnedError, r.Err)
 	}
 
-	return s.posts[offset : limit+offset]
+	res := make([]*posts.Post, len(r.Posts))
+
+	for i, p := range r.Posts {
+		id, err := uuid.FromBytes(p.Id)
+
+		if err != nil {
+			return nil, errors.Wrap(ErrUnableToParseUUID, err.Error())
+		}
+
+		res[i] = &posts.Post{
+			Id:     id,
+			Author: p.Author,
+			Text:   p.Text,
+			Date:   time.Unix(p.Date, 0),
+		}
+	}
+
+	return res, nil
 }
 
-func (s *postsService) GetPost(id uuid.UUID) *Post {
-	return s.postMap[id]
+func (s *postsService) GetPost(id uuid.UUID) (*posts.Post, error) {
+	return nil, nil
 }
 
-func (s *postsService) SubmitPost(author string, text string) *uuid.UUID {
-	post := &Post{
-		Id:     uuid.NewV4(),
-		Author: author,
-		Text:   text,
-		Date:   time.Now(),
-	}
-
-	s.submitMutex.Lock()
-	defer s.submitMutex.Unlock()
-
-	s.posts = append([]*Post{post}, s.posts...)
-	s.postMap[post.Id] = post
-
-	return &post.Id
+func (s *postsService) AddPost(author string, text string) (uuid.UUID, error) {
+	return uuid.Nil, nil
 }

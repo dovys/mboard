@@ -10,8 +10,8 @@ type MockPostsService struct {
 	mock.Mock
 }
 
-func (m *MockPostsService) GetPosts(limit uint64, offset uint64) []*services.Post {
-	args := m.Called(limit, offset)
+func (m *MockPostsService) GetLatestPosts(offset uint64, limit uint64) []*services.Post {
+	args := m.Called(offset, limit)
 
 	return args.Get(0).([]*services.Post)
 }
@@ -22,7 +22,7 @@ func (m *MockPostsService) GetPost(id uuid.UUID) *services.Post {
 	return args.Get(0).(*services.Post)
 }
 
-func (m *MockPostsService) SubmitPost(author string, text string) *uuid.UUID {
+func (m *MockPostsService) AddPost(author string, text string) *uuid.UUID {
 	args := m.Called(author, text)
 
 	return args.Get(0).(*uuid.UUID)

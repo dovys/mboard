@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
 	"os"
+
+	"github.com/go-kit/kit/log"
+
+	"net/http/pprof"
 
 	"github.com/dovys/mboard/api/handlers"
 	"github.com/dovys/mboard/api/services"
@@ -12,8 +15,14 @@ import (
 )
 
 func main() {
-	address := *flag.String("host", "localhost:8080", "Host.")
+	var logger log.Logger
+	{
+		logger = log.NewLogfmtLogger(os.Stdout)
+		logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
+		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
+	}
 
+	address := flag.String("host", ":8080", "Host.")
 	hostname, _ := os.Hostname()
 	mux := mux.NewRouter()
 
@@ -23,15 +32,27 @@ func main() {
 		rw.Write([]byte(hostname))
 	})
 
-	handlers.NewPostsHandler(services.NewPostsService()).Register(mux.PathPrefix("/posts").Subrouter())
+	// PostsService
+	{
+		logger := log.NewContext(logger).With("handler", "posts")
+		h := handlers.NewPostsHandler(services.NewPostsService(), logger)
+		h.Register(mux.PathPrefix("/posts").Subrouter())
+	}
 
 	mux.Handle("/", http.FileServer(http.Dir("./static/")))
 
-	// _ "net/http/pprof"
-	// go func() {
-	// 	log.Println(http.ListenAndServe(":6060", nil))
-	// }()
+	logger.Log("listening", *address, "machine", hostname)
 
-	log.Printf("Running %s on %s\n", address, hostname)
-	log.Fatal(http.ListenAndServe(address, mux))
+	go logger.Log("err", http.ListenAndServe(*address, mux))
+
+	// pprof
+	{
+		m := http.NewServeMux()
+		m.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+		m.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
+		m.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
+		m.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
+		m.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
+		http.ListenAndServe(":33377", nil)
+	}
 }

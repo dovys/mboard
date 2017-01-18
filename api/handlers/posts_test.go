@@ -33,7 +33,7 @@ func setupSuite() *PostsHandlerTestSuite {
 	return s
 }
 
-func TestGetPosts(t *testing.T) {
+func TestGetLatestPosts(t *testing.T) {
 	// query -> expected offset & limit in the service call
 	cases := map[string][2]uint64{
 		"":                 [2]uint64{0, 10},
@@ -51,12 +51,12 @@ func TestGetPosts(t *testing.T) {
 		t.Run(query, func(t *testing.T) {
 			s := setupSuite()
 			s.postsService.
-				On("GetPosts", with[0], with[1]).
+				On("GetLatestPosts", with[0], with[1]).
 				Return([]*services.Post{&services.Post{Author: "Suite", Text: "Testing"}}).
 				Once()
 
-			// Execute a request, see that the services.PostsService.GetPosts gets called
-			// with the expected values and serializes the result of GetPosts as a response.
+			// Execute a request, see that the services.PostsService.GetLatestPosts gets called
+			// with the expected values and serializes the result of GetLatestPosts as a response.
 			s.mux.ServeHTTP(s.w, httptest.NewRequest("GET", "/?"+query, nil))
 
 			assert.Equal(t, http.StatusOK, s.w.Code)
@@ -112,12 +112,12 @@ func TestGetPostNotFound(t *testing.T) {
 	s.postsService.AssertExpectations(t)
 }
 
-func TestSubmitPost(t *testing.T) {
+func TestAddPost(t *testing.T) {
 	s := setupSuite()
 	id := uuid.NewV4()
 
 	s.postsService.
-		On("SubmitPost", "Suite", "Lowercase").
+		On("AddPost", "Suite", "Lowercase").
 		Return(&id).
 		Once()
 
@@ -129,7 +129,7 @@ func TestSubmitPost(t *testing.T) {
 	s.postsService.AssertExpectations(t)
 }
 
-func TestSubmitPostWithInvalidData(t *testing.T) {
+func TestAddPostWithInvalidData(t *testing.T) {
 	cases := map[string]string{
 		"InvalidJson":      "invalid",
 		"Empty":            "",
@@ -150,7 +150,7 @@ func TestSubmitPostWithInvalidData(t *testing.T) {
 				`{"error":"Invalid post data. Expected body: {\"Author\":\"John Smith\",\"Text\":\"Post\"}."}`+"\n",
 				s.w.Body.String(),
 			)
-			s.postsService.AssertNotCalled(t, "SubmitPost")
+			s.postsService.AssertNotCalled(t, "AddPost")
 		})
 	}
 }
