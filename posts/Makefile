@@ -2,8 +2,9 @@ SHELL = /bin/bash
 MAKEFLAGS+=-s
 BINARY = build/service
 TEST_DIRECTORIES = ./ 
+.DEFAULT_GOAL := build
 
-$(BINARY):
+build:
 	go build -o $(BINARY) cmd/main.go
 	echo $(BINARY)
 
@@ -29,4 +30,4 @@ proto:
 	which protoc > /dev/null || { echo "protoc not found."; exit 1; }
 	protoc pb/*.proto --go_out=plugins=grpc:.
 
-.PHONY: clean install test testv proto container
+.PHONY: clean install test testv proto container build

@@ -9,8 +9,6 @@ import (
 
 	"github.com/go-kit/kit/log"
 
-	"net/http/pprof"
-
 	"github.com/dovys/mboard/api/handlers"
 	"github.com/dovys/mboard/api/services"
 	"github.com/dovys/mboard/posts/pb"
@@ -56,7 +54,6 @@ func main() {
 	hostname, _ := os.Hostname()
 	// Debug
 	{
-		m.Handle("/", http.FileServer(http.Dir("./static/")))
 		m.HandleFunc("/status", func(rw http.ResponseWriter, r *http.Request) {
 			rw.WriteHeader(http.StatusOK)
 			rw.Write([]byte("Running on "))
@@ -65,17 +62,5 @@ func main() {
 	}
 
 	logger.Log("listening", *address, "api", *apiPrefix, "machine", hostname)
-
-	go logger.Log("err", http.ListenAndServe(*address, m))
-
-	// pprof
-	{
-		m := http.NewServeMux()
-		m.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
-		m.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
-		m.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
-		m.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
-		m.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
-		http.ListenAndServe(":33377", nil)
-	}
+	logger.Log("err", http.ListenAndServe(*address, m))
 }

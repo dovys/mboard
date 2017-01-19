@@ -2,8 +2,9 @@ SHELL = /bin/bash
 MAKEFLAGS+=-s
 BINARY = build/api
 TEST_DIRECTORIES = ./handlers ./services
+.DEFAULT_GOAL := build
 
-$(BINARY):
+build:
 	go build -o $(BINARY) cmd/main.go
 	echo $(BINARY)
 
@@ -25,4 +26,4 @@ container:
 	docker build -t mboard/api:latest .
 	docker tag mboard/api:latest gcr.io/mboard-kub/api
 
-.PHONY: clean install test testv
+.PHONY: clean install test testv build container
