@@ -117,11 +117,13 @@ func DecodeGetPostRequest(_ context.Context, grpcRequest interface{}) (interface
 func EncodeGetPostResponse(_ context.Context, endpointResponse interface{}) (interface{}, error) {
 	res := endpointResponse.(*getPostResponse)
 
-	if res.Err != nil {
-		return &pb.GetPostResponse{
-			Post: &pb.Post{},
-			Err:  res.Err.Error(),
-		}, nil
+	if res.Post == nil || res.Err != nil {
+		var err string
+		if res.Err != nil {
+			err = res.Err.Error()
+		}
+
+		return &pb.GetPostResponse{Post: &pb.Post{}, Err: err}, nil
 	}
 
 	return &pb.GetPostResponse{

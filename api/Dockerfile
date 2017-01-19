@@ -1,6 +1,6 @@
 FROM alpine:3.1 
 
-COPY bin/mboard  /usr/bin/mboard
-ENTRYPOINT ["/usr/bin/mboard"]
+COPY build/api  /usr/local/bin/api
+ENTRYPOINT ["/usr/local/bin/api"]
 
 EXPOSE 8080

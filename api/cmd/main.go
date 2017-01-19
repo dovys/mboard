@@ -5,16 +5,24 @@ import (
 	"net/http"
 	"os"
 
+	"google.golang.org/grpc"
+
 	"github.com/go-kit/kit/log"
 
 	"net/http/pprof"
 
 	"github.com/dovys/mboard/api/handlers"
 	"github.com/dovys/mboard/api/services"
+	"github.com/dovys/mboard/posts/pb"
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	var (
+		address   = flag.String("api.addr", ":8080", "Address to expose API under.")
+		apiPrefix = flag.String("api.prefix", "/api", "API Prefix")
+	)
+
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stdout)
@@ -22,28 +30,43 @@ func main() {
 		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
 	}
 
-	address := flag.String("host", ":8080", "Host.")
-	hostname, _ := os.Hostname()
-	mux := mux.NewRouter()
+	flag.Parse()
+	m := mux.NewRouter()
+	api := m.PathPrefix(*apiPrefix).Subrouter()
 
-	mux.HandleFunc("/status", func(rw http.ResponseWriter, r *http.Request) {
-		rw.WriteHeader(http.StatusOK)
-		rw.Write([]byte("Running on "))
-		rw.Write([]byte(hostname))
-	})
-
-	// PostsService
+	// /posts Handler
 	{
-		logger := log.NewContext(logger).With("handler", "posts")
-		h := handlers.NewPostsHandler(services.NewPostsService(), logger)
-		h.Register(mux.PathPrefix("/posts").Subrouter())
+		// lacks timeouts, proper error handling when the service disappears, etc.
+		conn, err := grpc.Dial("posts:9001", grpc.WithInsecure())
+
+		if err != nil {
+			logger.Log("err", err)
+			return
+		}
+
+		s := services.NewPostsService(
+			pb.NewPostsClient(conn),
+			log.NewContext(logger).With("service", "posts"),
+		)
+
+		h := handlers.NewPostsHandler(s)
+		h.Register(api.PathPrefix("/posts").Subrouter())
 	}
 
-	mux.Handle("/", http.FileServer(http.Dir("./static/")))
+	hostname, _ := os.Hostname()
+	// Debug
+	{
+		m.Handle("/", http.FileServer(http.Dir("./static/")))
+		m.HandleFunc("/status", func(rw http.ResponseWriter, r *http.Request) {
+			rw.WriteHeader(http.StatusOK)
+			rw.Write([]byte("Running on "))
+			rw.Write([]byte(hostname))
+		})
+	}
 
-	logger.Log("listening", *address, "machine", hostname)
+	logger.Log("listening", *address, "api", *apiPrefix, "machine", hostname)
 
-	go logger.Log("err", http.ListenAndServe(*address, mux))
+	go logger.Log("err", http.ListenAndServe(*address, m))
 
 	// pprof
 	{

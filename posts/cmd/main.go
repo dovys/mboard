@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"net"
 	"os"
 
@@ -13,6 +14,7 @@ import (
 )
 
 func main() {
+	var listenAddr = flag.String("grpc.addr", ":9001", "Address for GRPC to listen on.")
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stdout)
@@ -20,7 +22,8 @@ func main() {
 		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
 	}
 
-	logger.Log("msg", "hello", "key", "value")
+	flag.Parse()
+	logger.Log("status", "started")
 
 	var service posts.Service
 	{
@@ -33,16 +36,18 @@ func main() {
 
 	// Transport
 	{
-		tcp, err := net.Listen("tcp", ":8081")
+		tcp, err := net.Listen("tcp", *listenAddr)
+
 		if err != nil {
-			panic(err)
+			logger.Log("err", err)
+			return
 		}
 
 		server := posts.MakePostsServer(ctx, endpoints, logger)
 		s := grpc.NewServer()
 		pb.RegisterPostsServer(s, server)
 
-		logger.Log("addr", ":8081", "transport", "grpc")
+		logger.Log("status", "listening", "addr", *listenAddr)
 		s.Serve(tcp)
 	}
 }

@@ -25,8 +25,7 @@ type Post struct {
 }
 
 var (
-	ErrPostNotFound = errors.New("POST_NOT_FOUND")
-	ErrPostInvalid  = errors.New("POST_INVALID")
+	ErrPostInvalid = errors.New("Invalid post. Please provide author and text.")
 )
 
 func NewPostsService(logger log.Logger) Service {
@@ -63,9 +62,7 @@ func (s *postsService) GetPost(id uuid.UUID) (*Post, error) {
 		return post, nil
 	}
 
-	log.NewContext(s.logger).With("id", id.String()).Log("err", ErrPostNotFound.Error())
-
-	return nil, ErrPostNotFound
+	return nil, nil
 }
 
 func (s *postsService) AddPost(author string, text string) (uuid.UUID, error) {

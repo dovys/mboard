@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-kit/kit/log"
-
 	"strconv"
 
 	"github.com/dovys/mboard/api/services"
@@ -15,11 +13,10 @@ import (
 
 type postsHandler struct {
 	postsService services.PostsService
-	logger       log.Logger
 }
 
-func NewPostsHandler(s services.PostsService, l log.Logger) Handler {
-	return &postsHandler{s, l}
+func NewPostsHandler(s services.PostsService) Handler {
+	return &postsHandler{s}
 }
 
 func (h *postsHandler) handleGetLatestPosts(rw http.ResponseWriter, r *http.Request) {
@@ -27,8 +24,7 @@ func (h *postsHandler) handleGetLatestPosts(rw http.ResponseWriter, r *http.Requ
 	var err error
 	e := json.NewEncoder(rw)
 
-	// the max limit will be 2^7-1=127
-	if limit, err = strconv.ParseInt(r.URL.Query().Get("limit"), 10, 7); err != nil || limit == 0 {
+	if limit, err = strconv.ParseInt(r.URL.Query().Get("limit"), 10, 8); err != nil || limit == 0 {
 		limit = 10
 	}
 
@@ -39,9 +35,8 @@ func (h *postsHandler) handleGetLatestPosts(rw http.ResponseWriter, r *http.Requ
 	collection, err := h.postsService.GetLatestPosts(offset, limit)
 
 	if err != nil {
-		h.logger.Log("method", "GetLatestPosts", "err", err.Error())
-		rw.WriteHeader(http.StatusInternalServerError)
-		e.Encode(ErrorMessage{"Could not retrieve posts."})
+		rw.WriteHeader(http.StatusServiceUnavailable)
+		e.Encode(ErrorMessage{err.Error()})
 		return
 	}
 
@@ -59,7 +54,6 @@ func (h *postsHandler) handleAddPost(rw http.ResponseWriter, r *http.Request) {
 	}{}
 
 	if err := d.Decode(data); err != nil {
-		h.logger.Log("method", "AddPost", "err", err.Error())
 		rw.WriteHeader(http.StatusBadRequest)
 		e.Encode(ErrorMessage{"Invalid post data. Expected body: {\"Author\":\"John Smith\",\"Text\":\"Post\"}."})
 		return
@@ -68,7 +62,6 @@ func (h *postsHandler) handleAddPost(rw http.ResponseWriter, r *http.Request) {
 	id, err := h.postsService.AddPost(data.Author, data.Text)
 
 	if err != nil {
-		h.logger.Log("method", "AddPost", "err", err.Error())
 		// todo different headers for different errors?
 		rw.WriteHeader(http.StatusServiceUnavailable)
 		e.Encode(ErrorMessage{err.Error()})
@@ -84,7 +77,6 @@ func (h *postsHandler) handleGetPost(rw http.ResponseWriter, r *http.Request) {
 	id, err := uuid.FromString(vars["post"])
 
 	if err != nil {
-		h.logger.Log("method", "GetPost", "err", err.Error())
 		rw.WriteHeader(http.StatusBadRequest)
 		e.Encode(ErrorMessage{"Invalid UUID."})
 		return
@@ -93,8 +85,13 @@ func (h *postsHandler) handleGetPost(rw http.ResponseWriter, r *http.Request) {
 	post, err := h.postsService.GetPost(id)
 
 	if err != nil {
-		h.logger.Log("method", "GetPost", "err", err.Error())
 		// todo different headers for different errors?
+		rw.WriteHeader(http.StatusServiceUnavailable)
+		e.Encode(ErrorMessage{err.Error()})
+		return
+	}
+
+	if post == nil {
 		rw.WriteHeader(http.StatusNotFound)
 		e.Encode(ErrorMessage{"Post not found."})
 		return

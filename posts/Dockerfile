@@ -1,6 +1,6 @@
 FROM alpine:3.1 
 
-COPY bin/service  /usr/bin/service
-ENTRYPOINT ["/usr/bin/service"]
+COPY build/service /usr/local/bin/service
+ENTRYPOINT ["/usr/local/bin/service"]
 
-EXPOSE 8080
+EXPOSE 9001
