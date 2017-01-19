@@ -1,0 +1,37 @@
+{
+    "kind": "ReplicationController",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "api",
+        "labels": {
+            "service": "api"
+        }
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "service": "api"
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "service": "api"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "name": "api",
+                        "image": "gcr.io/mboard-kub/api:latest",
+                        "ports": [
+                            {
+                                "name": "http",
+                                "containerPort": 8080
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

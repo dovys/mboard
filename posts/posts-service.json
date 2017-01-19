@@ -1,0 +1,21 @@
+{
+    "kind": "Service",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "posts",
+        "labels": {
+            "service": "posts"
+        }
+    },
+    "spec": {
+        "ports": [
+            {
+                "port": 9001,
+                "targetPort": "posts-service"
+            }
+        ],
+        "selector": {
+            "service": "posts"
+        }
+    }
+}

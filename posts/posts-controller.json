@@ -1,0 +1,37 @@
+{
+    "kind": "ReplicationController",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "posts",
+        "labels": {
+            "service": "posts"
+        }
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "service": "posts"
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "service": "posts"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "name": "posts",
+                        "image": "gcr.io/mboard-kub/posts:latest",
+                        "ports": [
+                            {
+                                "name": "posts-service",
+                                "containerPort": 9001
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
