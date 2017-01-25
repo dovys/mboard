@@ -8,10 +8,6 @@ build:
 	go build -o $(BINARY) cmd/main.go
 	echo $(BINARY)
 
-install:
-	which glide > /dev/null || { echo "glide not found. run brew install glide"; exit 1; }
-	glide install
-
 testv:
 	go test -v $(TEST_DIRECTORIES)
 
