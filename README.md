@@ -17,4 +17,11 @@ docker run --rm -p 8080:8080 --link posts:posts mboard/api:latest
 ```sh
 find -E . -regex  "(.*)+\-(controller|service|deployment).(json|yml)" | xargs -L 1 kubectl create -f
 ```
-> Deploy on linux: omit the -E flag
+> Deploy from linux: omit the -E flag
+
+#### Todo
+- Proper logging, tracing
+- Metrics on Prometheus
+- Auth
+- TLS
+- Better coverage

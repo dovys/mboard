@@ -26,4 +26,4 @@ proto:
 	which protoc > /dev/null || { echo "protoc not found."; exit 1; }
 	protoc pb/*.proto --go_out=plugins=grpc:.
 
-.PHONY: clean install test testv proto container build
+.PHONY: clean test testv proto container build

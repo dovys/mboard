@@ -34,7 +34,7 @@ func main() {
 
 	// /posts Handler
 	{
-		// lacks timeouts, proper error handling when the service disappears, etc.
+		// todo: lacks timeouts, proper error handling when the service disappears, etc.
 		conn, err := grpc.Dial("posts:9001", grpc.WithInsecure())
 
 		if err != nil {

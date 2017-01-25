@@ -22,4 +22,4 @@ container:
 	docker build -t mboard/api:latest .
 	docker tag mboard/api:latest gcr.io/mboard-kub/api
 
-.PHONY: clean install test testv build container
+.PHONY: clean test testv build container
