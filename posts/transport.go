@@ -76,6 +76,7 @@ func (s *postsServer) AddPost(ctx context.Context, req *pb.AddPostRequest) (*pb.
 	return response.(*pb.AddPostResponse), nil
 }
 
+// todo: Don't export
 func DecodeGetLatestPostsRequest(_ context.Context, grpcRequest interface{}) (interface{}, error) {
 	req := grpcRequest.(*pb.GetLatestPostsRequest)
 

@@ -25,7 +25,7 @@ type Post struct {
 }
 
 var (
-	ErrPostInvalid = errors.New("Invalid post. Please provide author and text.")
+	ErrPostInvalid = errors.New("Invalid post. Please provide an author and the text.")
 )
 
 func NewPostsService(logger log.Logger) Service {
@@ -45,7 +45,6 @@ type postsService struct {
 }
 
 func (s *postsService) GetLatestPosts(offset int64, limit int64) ([]*Post, error) {
-	s.AddPost("user", "post")
 	if int(offset) >= len(s.posts) || offset < 0 || limit < 1 {
 		return s.posts[0:0], nil
 	}

@@ -8,6 +8,7 @@ service Posts {
     rpc AddPost(AddPostRequest) returns (AddPostResponse) {}
 }
 
+// todo: message type for id to indicate it's an uuid?
 message Post {
     bytes id = 1;
     string author = 2;
