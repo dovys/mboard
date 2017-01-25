@@ -1,0 +1,132 @@
+{
+    "memo": "02a29a4c151abee4bb5867ec3e2b94c70651877752ae0c6457ee4f8a15e3c7c3",
+    "projects": [
+        {
+            "name": "github.com/davecgh/go-spew",
+            "branch": "master",
+            "revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+            "packages": [
+                "spew"
+            ]
+        },
+        {
+            "name": "github.com/go-kit/kit",
+            "version": "v0.3.0",
+            "revision": "cc097dca15665f80f522271b959b3278dc631642",
+            "packages": [
+                "endpoint",
+                "log",
+                "transport/grpc"
+            ]
+        },
+        {
+            "name": "github.com/go-logfmt/logfmt",
+            "branch": "master",
+            "revision": "390ab7935ee28ec6b286364bba9b4dd6410cb3d5",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/go-stack/stack",
+            "branch": "master",
+            "revision": "100eb0c0a9c5b306ca2fb4f165df21d80ada4b82",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/golang/protobuf",
+            "branch": "master",
+            "revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
+            "packages": [
+                "proto"
+            ]
+        },
+        {
+            "name": "github.com/gorilla/context",
+            "version": "v1.1",
+            "revision": "1ea25387ff6f684839d82767c1733ff4d4d15d0a",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/gorilla/mux",
+            "version": "v1.3.0",
+            "revision": "392c28fe23e1c45ddba891b0320b3b5df220beea",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/kr/logfmt",
+            "branch": "master",
+            "revision": "b84e30acd515aadc4b783ad4ff83aff3299bdfe0",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/pkg/errors",
+            "version": "v0.8.0",
+            "revision": "645ef00459ed84a119197bfb8d8205042c6df63d",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/pmezard/go-difflib",
+            "version": "v1.0.0",
+            "revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+            "packages": [
+                "difflib"
+            ]
+        },
+        {
+            "name": "github.com/satori/go.uuid",
+            "version": "v1.1.0",
+            "revision": "879c5887cd475cd7864858769793b2ceb0d44feb",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/stretchr/objx",
+            "branch": "master",
+            "revision": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/stretchr/testify",
+            "version": "v1.1.4",
+            "revision": "69483b4bd14f5845b5a1e55bca19e954e827f1d0",
+            "packages": [
+                "assert",
+                "mock"
+            ]
+        },
+        {
+            "name": "golang.org/x/net",
+            "branch": "master",
+            "revision": "4971afdc2f162e82d185353533d3cf16188a9f4e",
+            "packages": [
+                "context",
+                "http2",
+                "http2/hpack",
+                "trace"
+            ]
+        },
+        {
+            "name": "google.golang.org/grpc",
+            "version": "v1.0.5",
+            "revision": "708a7f9f3283aa2d4f6132d287d78683babe55c8",
+            "packages": [
+                ".",
+                "metadata"
+            ]
+        }
+    ]
+}
