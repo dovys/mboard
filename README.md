@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dovys/mboard.svg?branch=master)](https://travis-ci.org/dovys/mboard)
+
 Experimental project using go-kit
 ------
 
