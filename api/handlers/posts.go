@@ -24,11 +24,11 @@ func (h *postsHandler) handleGetLatestPosts(rw http.ResponseWriter, r *http.Requ
 	var err error
 	e := json.NewEncoder(rw)
 
-	if limit, err = strconv.ParseInt(r.URL.Query().Get("limit"), 10, 8); err != nil || limit == 0 {
+	if limit, err = strconv.ParseInt(r.URL.Query().Get("limit"), 10, 8); err != nil || limit <= 0 {
 		limit = 10
 	}
 
-	if offset, err = strconv.ParseInt(r.URL.Query().Get("offset"), 10, 64); err != nil {
+	if offset, err = strconv.ParseInt(r.URL.Query().Get("offset"), 10, 64); err != nil || offset < 0 {
 		offset = 0
 	}
 

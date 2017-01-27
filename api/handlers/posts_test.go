@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/dovys/mboard/api/handlers/mock"
-	"github.com/dovys/mboard/api/services"
+	"github.com/dovys/mboard/posts"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -35,16 +35,16 @@ func setupSuite() *PostsHandlerTestSuite {
 
 func TestGetLatestPosts(t *testing.T) {
 	// query -> expected offset & limit in the service call
-	cases := map[string][2]uint64{
-		"":                 [2]uint64{0, 10},
-		"limit=2&offset=3": [2]uint64{3, 2},
-		"limit=0":          [2]uint64{0, 10},
-		"limit=-1":         [2]uint64{0, 10},
-		"limit=eleven":     [2]uint64{0, 10},
-		"offset=eleven":    [2]uint64{0, 10},
-		"offset=20":        [2]uint64{20, 10},
-		"offset=0":         [2]uint64{0, 10},
-		"offset=-1":        [2]uint64{0, 10},
+	cases := map[string][2]int64{
+		"":                 [2]int64{0, 10},
+		"limit=2&offset=3": [2]int64{3, 2},
+		"limit=0":          [2]int64{0, 10},
+		"limit=-1":         [2]int64{0, 10},
+		"limit=eleven":     [2]int64{0, 10},
+		"offset=eleven":    [2]int64{0, 10},
+		"offset=20":        [2]int64{20, 10},
+		"offset=0":         [2]int64{0, 10},
+		"offset=-1":        [2]int64{0, 10},
 	}
 
 	for query, with := range cases {
@@ -52,7 +52,7 @@ func TestGetLatestPosts(t *testing.T) {
 			s := setupSuite()
 			s.postsService.
 				On("GetLatestPosts", with[0], with[1]).
-				Return([]*services.Post{&services.Post{Author: "Suite", Text: "Testing"}}).
+				Return([]*posts.Post{&posts.Post{Author: "Suite", Text: "Testing"}}).
 				Once()
 
 			// Execute a request, see that the services.PostsService.GetLatestPosts gets called
@@ -76,7 +76,7 @@ func TestGetPost(t *testing.T) {
 	id, _ := uuid.FromString("5608f3e1-bfc7-495f-9e09-709fefb28dc9")
 	s.postsService.
 		On("GetPost", id).
-		Return(&services.Post{Id: id}).
+		Return(&posts.Post{Id: id}).
 		Once()
 
 	s.mux.ServeHTTP(s.w, httptest.NewRequest("GET", "/5608f3e1-bfc7-495f-9e09-709fefb28dc9", nil))
@@ -98,7 +98,7 @@ func TestGetPostInvalidUuid(t *testing.T) {
 func TestGetPostNotFound(t *testing.T) {
 	s := setupSuite()
 
-	var nilPost *services.Post
+	var nilPost *posts.Post
 	id, _ := uuid.FromString("5608f3e1-bfc7-495f-9e09-709fefb28dc9")
 	s.postsService.
 		On("GetPost", id).
@@ -118,7 +118,7 @@ func TestAddPost(t *testing.T) {
 
 	s.postsService.
 		On("AddPost", "Suite", "Lowercase").
-		Return(&id).
+		Return(id).
 		Once()
 
 	body := strings.NewReader(`{"Author":"Suite","text":"Lowercase"}`)
@@ -135,10 +135,6 @@ func TestAddPostWithInvalidData(t *testing.T) {
 		"Empty":            "",
 		"Collection":       "[]",
 		"InvalidStructure": `{"Text":"LaLaLaLand","Author":0}`,
-		"MissingAuthor":    `{"Text":"LaLaLaLand"}`,
-		"MissingText":      `{"Author":"LaLaLaLand"}`,
-		"EmptyAuthor":      `{"Text":"LaLaLaLand","Author":""}`,
-		"EmptyText":        `{"Author":"LaLaLaLand","Text":""}`,
 	}
 
 	for title, body := range cases {

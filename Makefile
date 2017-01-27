@@ -11,3 +11,7 @@ build:
 
 container:
 	ls -d */ | grep -v vendor | xargs -L 1 make container -C
+
+test:
+	go test `(go list ./... |  grep -v vendor)`
+
