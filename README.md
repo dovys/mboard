@@ -28,3 +28,4 @@ find -E . -regex  "(.*)+\-(controller|service|deployment).(json|yml)" | xargs -L
 - TLS
 - Better coverage
 - ~~CI builds~~
+- To commit vendor or not to commit vendor
