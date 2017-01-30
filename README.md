@@ -27,4 +27,4 @@ find -E . -regex  "(.*)+\-(controller|service|deployment).(json|yml)" | xargs -L
 - Auth
 - TLS
 - Better coverage
-- CI builds
+- ~~CI builds~~
