@@ -19,8 +19,7 @@ clean:
 
 container:
 	which docker > /dev/null || { echo "Docker not found."; exit 1; }
-	docker build -t mboard/posts:latest .
-	docker tag mboard/posts:latest gcr.io/mboard-kub/posts
+	docker build -t mboard/posts:latest -t gcr.io/mboard-kub/posts .
 
 proto:
 	which protoc > /dev/null || { echo "protoc not found."; exit 1; }

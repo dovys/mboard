@@ -19,7 +19,6 @@ clean:
 
 container:
 	which docker > /dev/null || { echo "Docker not found."; exit 1; }
-	docker build -t mboard/api:latest .
-	docker tag mboard/api:latest gcr.io/mboard-kub/api
+	docker build -t mboard/api:latest -t gcr.io/mboard-kub/api .
 
 .PHONY: clean test testv build container
